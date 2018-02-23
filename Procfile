@@ -1,1 +1,1 @@
-web: java $JVM_OPTS -jar target/coveo-city-search.jar
+web: java $JVM_OPTS -cp target/coveo-city-search.jar clojure.main -m coveo-city-search.web
