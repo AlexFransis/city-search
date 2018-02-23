@@ -43,6 +43,7 @@
 (defn -main
   [& args]
   (let [config (load-config "config.edn")
-        state (load-data config)]
+        state (load-data config)
+        port (or (Integer/parseInt (System/getenv "PORT")) 3000)]
     (start-repl)
-    (start-http (app state))))
+    (start-http (app state) :port port)))

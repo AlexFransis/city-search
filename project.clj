@@ -7,7 +7,6 @@
                  [org.clojure/tools.nrepl "0.2.13"]
                  [ring/ring-mock "0.3.2"]
                  [cheshire "5.8.0"]
-                 [cider/cider-nrepl "0.17.0-SNAPSHOT"]
                  [clj-fuzzy "0.4.1"]]
   :min-lein-version "2.0.0"
   :main ^:skip-aot coveo.core
