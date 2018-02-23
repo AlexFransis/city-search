@@ -37,20 +37,17 @@
   Will add a default value of 0 in case either is missing but not both.
 
   Takes:
-  - `:lat1`  key with a `Double` value
-  - `:long1` key with a `Double` value
-  - `:lat2`  key with a `Double` value
-  - `:long2` key with a `Double` value
+  - `geo1` a vector containing latitude and longitude as `Double`
+  - `geo2` a vector containing latitude and longitude as `Double`
 
   Returns:
   - `Double` score value from 0 to 1.0
 
   "
-  [& {:keys [lat1 long1 lat2 long2]
-      :or {lat1 0 long1 0}}]
+  [[lat1 long1 :as geo1] [lat2 long2 :as geo2]]
   (if (and (nil? lat1) (nil? long1))
     0
-    (let [distance          (calculate-distance [lat1 long1] [lat2 long2])
+    (let [distance          (calculate-distance geo1 geo2)
           slope             1.50
           longest-distance  20000.0
           adjusted-distance (Math/pow distance slope)]
@@ -73,13 +70,18 @@
   Defaults to an empty string if value is not provided.
 
   Returns:
-  - `Double` score value from 0 to 1.0
+  - `Double` score value from 0.0 to 1.0
+  - `nil` if arguments are not strings
   "
-  [& {:keys [city1 city2]
-      :or {city1 "" city2 ""}}]
-  (let [longest-string (max (count city1) (count city2))]
-    (- 1.0 (/ (metrics/levenshtein city1 city2)
-              longest-string))))
+  [& {:keys [str1 str2]
+      :or {str1 "" str2 ""}}]
+  (if-not (and (instance? String str1) (instance? String str2))
+    nil
+    (let [longest-string (max (count str1) (count str2))]
+      (if (= 0 longest-string)
+        1.0 ;; perfect score if both strings are empty
+        (- 1.0 (/ (metrics/levenshtein str1 str2)
+                  longest-string))))))
 
 (defn get-score
   "Returns a score between 0 and 1.0 to determine the confidence of
@@ -105,7 +107,6 @@
   [{:keys [q long lat] :as query-params}
    {:keys [ascii longitude latitude] :as match}]
   (let [weight (if (and (nil? long) (nil? lat)) 1.0 0.5)
-        city-score (get-city-name-score :city1 q :city2 ascii)
-        distance-score (get-distance-score :lat1 lat :long1 long
-                                           :lat2 latitude :long2 longitude)]
+        city-score (get-city-name-score :str1 q :str2 ascii)
+        distance-score (get-distance-score [lat long] [latitude longitude])]
     (Double. (format "%.4f" (+ (* weight city-score) (* weight distance-score))))))
