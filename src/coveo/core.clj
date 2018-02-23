@@ -44,7 +44,7 @@
   [& args]
   (let [config (load-config "config.edn")
         state (load-data config)
-        http-port (or (Integer/parseInt (System/getenv "PORT")) 3000)
-        nrepl-port (or (Integer/parseInt (System/getenv "NREPL_PORT")) 7000)]
+        http-port (Integer/valueOf (or (System/getenv "PORT") "3000"))
+        nrepl-port (Integer/valueOf (or (System/getenv "NREPL_PORT") "7000"))]
     (start-repl :port nrepl-port)
     (start-http (app state) :port http-port)))
