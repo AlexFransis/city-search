@@ -1,0 +1,10 @@
+{
+    "environments": {
+        "test": {
+            "env": {
+                "PORT": 3000,
+                "NREPL_PORT": 7000
+            }
+        }
+    }
+}
