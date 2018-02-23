@@ -7,25 +7,35 @@
 
 (defn- rad->deg
   [rad]
-  (* rad (/ 180.0 Math/PI)))
+  (* rad (/ 180 Math/PI)))
+
+(defn- round-with-precision
+  "Rounds a `Double` to the given precision."
+  [precision double]
+  (let [factor (Math/pow 10 precision)]
+    (/ (Math/round (* double factor))
+       factor)))
 
 
-(defn- calculate-distance
+(defn calculate-distance
   "Calculates the distance in KM between two GPS coordinates.
   Uses Haversine formula. "
   [[lat1 long1 :as geo1] [lat2 long2 :as geo2]]
-  (let [theta (- long1 long2)
-        dist (+ (* (Math/sin (deg->rad lat1))
-                   (Math/sin (deg->rad lat2)))
-                (* (Math/cos (deg->rad lat1))
-                   (Math/cos (deg->rad lat2))
-                   (Math/cos (deg->rad theta))))]
-    (->> dist
-         Math/acos
-         rad->deg
-         (* 60 1.1515)
-         ;; Convert miles to kms
-         (* 1.609344))))
+  (when (not-any? nil? [lat1 lat2 long1 long2 geo1 geo2])
+    (let [theta (- long1 long2)
+          dist (+ (* (Math/sin (deg->rad lat1))
+                     (Math/sin (deg->rad lat2)))
+                  (* (Math/cos (deg->rad lat1))
+                     (Math/cos (deg->rad lat2))
+                     (Math/cos (deg->rad theta))))]
+      (->> dist
+           Math/acos
+           rad->deg
+           (* 60 1.1515)
+           ;; Convert miles to kms
+           (* 1.609344)
+           ;; Keep only 2 decimal places when computing distance
+           (round-with-precision 2)))))
 
 (defn get-distance-score
   "Returns a score between 0 and 1 based on the distance between two points.
@@ -45,16 +55,16 @@
 
   "
   [[lat1 long1 :as geo1] [lat2 long2 :as geo2]]
-  (if (and (nil? lat1) (nil? long1))
-    0
+  (if (not-any? nil? [lat1 long1 geo1])
     (let [distance          (calculate-distance geo1 geo2)
           slope             1.50
           longest-distance  20000.0
           adjusted-distance (Math/pow distance slope)]
       (if (>= adjusted-distance longest-distance)
         0
-        (- 1 (/ adjusted-distance
-                longest-distance))))))
+        (- 1.0 (/ adjusted-distance
+                  longest-distance))))
+    0))
 
 (defn get-city-name-score
   "Returns a score based on string similarity using Levenshtein's distance algorithm.
@@ -109,4 +119,4 @@
   (let [weight (if (and (nil? long) (nil? lat)) 1.0 0.5)
         city-score (get-city-name-score :str1 q :str2 ascii)
         distance-score (get-distance-score [lat long] [latitude longitude])]
-    (Double. (format "%.4f" (+ (* weight city-score) (* weight distance-score))))))
+    (round-with-precision 4 (+ (* weight city-score) (* weight distance-score)))))
