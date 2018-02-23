@@ -3,7 +3,8 @@
             [clojure.tools.nrepl.server :as nrepl]
             [coveo.handler :refer [app]]
             [coveo.loader :refer :all]
-            [org.httpkit.server :refer :all]))
+            [org.httpkit.server :refer :all])
+  (:gen-class))
 
 (defn load-config
   [file-name]

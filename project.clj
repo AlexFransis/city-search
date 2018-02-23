@@ -9,4 +9,7 @@
                  [cheshire "5.8.0"]
                  [cider/cider-nrepl "0.17.0-SNAPSHOT"]
                  [clj-fuzzy "0.4.1"]]
-  :main coveo.core)
+  :min-lein-version "2.0.0"
+  :main ^:skip-aot coveo.core
+  :profiles {:uberjar {:uberjar-name "coveo-city-search.jar"
+                       :aot :all}})
