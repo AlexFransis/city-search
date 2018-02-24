@@ -52,19 +52,18 @@
 
   Returns:
   - `Double` score value from 0 to 1.0
+  - `nil`    when any of the values passed is nil
 
   "
   [[lat1 long1 :as geo1] [lat2 long2 :as geo2]]
-  (if (not-any? nil? [lat1 long1 geo1])
+  (when (not-any? nil? [lat1 long1 geo1])
     (let [distance          (calculate-distance geo1 geo2)
           slope             1.50
           longest-distance  20000.0
           adjusted-distance (Math/pow distance slope)]
       (if (>= adjusted-distance longest-distance)
         0
-        (- 1.0 (/ adjusted-distance
-                  longest-distance))))
-    0))
+        (- 1.0 (/ adjusted-distance longest-distance))))))
 
 (defn get-city-name-score
   "Returns a score based on string similarity using Levenshtein's distance algorithm.
@@ -74,8 +73,8 @@
   longest string of the two.
 
   Takes:
-  - `city1` key with a `String` value
-  - `city2` key with a `String` value
+  - `str1` key with a `String` value
+  - `str2` key with a `String` value
 
   Defaults to an empty string if value is not provided.
 
@@ -93,30 +92,50 @@
         (- 1.0 (/ (metrics/levenshtein str1 str2)
                   longest-string))))))
 
-(defn get-score
+(defn- contains-geo?
+  "Returns true if at least one geo coordinate value was provided in the query parameters"
+  [{:keys [lat long] :as query-params} _]
+  (not-every? nil? [lat long]))
+
+(defn name-only-algo
+  "Algorithm to compute score when there is no geo coordinates provided"
+  [{:keys [q] :as query-params}
+   {:keys [ascii] :as match}]
+  (round-with-precision 4 (get-city-name-score :str1 q :str2 ascii)))
+
+(defn name-and-geo-algo
+  "Algorithm to compute score when geo coordinates are provided. Provides a default
+  value of 0 if either `lat` or `long` was not provided."
+  [{:keys [q lat long] :as query-params
+    :or {lat 0 long 0}}
+   {:keys [ascii latitude longitude] :as match}]
+  (let [weight         0.5
+        name-score     (get-city-name-score :str1 q :str2 ascii)
+        distance-score (get-distance-score [lat long] [latitude longitude])]
+    (round-with-precision 4 (* (+ name-score distance-score) weight))))
+
+(defmulti get-score
   "Returns a score between 0 and 1.0 to determine the confidence of
   the match with 1 being the most confident.
 
   If no values for the keys `lat` and `long` are provided, the weight
   of the score will be solely dependent on string comparison of the
   query parameter `q` and the name of the match `name`. The algorithm
-  used for string comparison will be Jaro-Walker's algorithm.
+  used for string comparison will be Levenshtein's distance algorithm.
 
   If values for the keys `lat` and `long` are provided, half of the weight
-  will be given to the string comparison of `q` and `name` and the other
-  half will be given based on the distance between the coordinates [`lat` `long`]
-  and [`latitude` `longitude`].
+  will be given to the string comparison of `q` and `ascii` and the other
+  half will be given based on the distance between the coordinates given in the
+  query parameters and the geo points of the match.
 
   Takes:
   - `query-params` map containing the keys `q`, `long`, `lat`
-  - `match`        map containing the keys `name`, `longitude`, `latitude`
+  - `match`        map containing the keys `ascii`, `longitude`, `latitude`
 
   Returns:
   - `Double` score value from 0 to 1.0
   "
-  [{:keys [q long lat] :as query-params}
-   {:keys [ascii longitude latitude] :as match}]
-  (let [weight (if (and (nil? long) (nil? lat)) 1.0 0.5)
-        city-score (get-city-name-score :str1 q :str2 ascii)
-        distance-score (get-distance-score [lat long] [latitude longitude])]
-    (round-with-precision 4 (+ (* weight city-score) (* weight distance-score)))))
+  contains-geo?)
+
+(defmethod get-score true [query-params match] (name-and-geo-algo query-params match))
+(defmethod get-score false [query-params match] (name-only-algo query-params match))
