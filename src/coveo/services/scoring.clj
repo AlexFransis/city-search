@@ -16,6 +16,35 @@
     (/ (Math/round (* double factor))
        factor)))
 
+(defn adjust-score-for-population
+  "Adjust the scores of suggestions.
+  A better score will be given to the city with the largest population in the
+  pool of suggestions.
+
+  Takes:
+
+  - `suggestions` coll of suggestion
+
+  Returns coll of suggestions with new scores
+  "
+  [suggestions]
+  (let [score-weight      0.5
+        population-weight 0.5
+        total-population  (reduce (fn [total city]
+                                    (+ total (:population city))) 0 suggestions)]
+    (reduce (fn [coll suggestion]
+              (let [population (:population suggestion)]
+                (conj coll
+                      (update suggestion :score
+                              (fn [score]
+                                (round-with-precision
+                                 4
+                                 (+ (* score-weight score)
+                                    (* population-weight (/ population
+                                                            total-population)))))))))
+            []
+            suggestions)))
+
 
 (defn calculate-distance
   "Calculates the distance in KM between two GPS coordinates.

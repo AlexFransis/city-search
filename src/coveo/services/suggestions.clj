@@ -1,6 +1,6 @@
 (ns coveo.services.suggestions
   (:require [clojure.string :as str]
-            [coveo.services.scoring :refer [get-score]]
+            [coveo.services.scoring :refer [get-score adjust-score-for-population]]
             [ring.util.http-response :as response]))
 
 (defn create-payload-object
@@ -36,6 +36,7 @@
     (->> (get cities (keyword (str (first q))))
          (filter (fn [record] (str/starts-with? (:ascii record) q)))
          (reduce (create-payload-object query-params) [])
+         adjust-score-for-population
          (sort-by :score >)
          (assoc {:result "ok"} :suggestions)
          response/ok)))
