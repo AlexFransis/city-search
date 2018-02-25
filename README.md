@@ -4,7 +4,7 @@ RESTful service to search major cities in Canada and USA
 
 ## Usage
 
-[Hosted service] (https://coveo-city-search.herokuapp.com/)
+[Hosted service](https://coveo-city-search.herokuapp.com/)
 
 ## License
 
