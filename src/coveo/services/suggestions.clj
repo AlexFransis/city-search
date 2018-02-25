@@ -30,8 +30,8 @@
   (if-not (seq cities)
     (response/internal-server-error {:result "error"
                                      :message "Failed to load data"})
-    (->> (get cities (keyword (str (first q))))
-         (filter (fn [record] (str/starts-with? (:ascii record) q)))
+    (->> (get cities (keyword (str (first (str/lower-case q)))))
+         (filter (fn [record] (str/starts-with? (:ascii record) (str/lower-case q))))
          (reduce (create-payload-object query-params) [])
          (adjust-score-for-population query-params)
          (sort-by :score >)
