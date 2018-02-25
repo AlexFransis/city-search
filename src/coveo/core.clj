@@ -26,8 +26,8 @@
     (println (str "### Starting nREPL server on port: " port " ###"))
     (nrepl/start-server :port port :handler handler)
     (catch Exception e
-      (println "### Failed to start nREPL ###")
-      (throw e))))
+      (println (str "### Failed to start nREPL ###\n"
+                    (.getMessage e))))))
 
 (defn start-http
   "Takes a ring handler to start the HTTP server."

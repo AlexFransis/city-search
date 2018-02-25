@@ -1,5 +1,6 @@
 (ns coveo.scoring-test
   (:require [coveo.services.scoring :refer :all]
+            [coveo.utils.helper :refer :all]
             [clojure.test :refer :all]))
 
 (def perfect-match {:q "montreal"

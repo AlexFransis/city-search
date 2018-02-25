@@ -29,8 +29,7 @@
   (testing "Test GET request to /suggestions without query parameters returns expected response"
     (let [request  (mock/request :get "/suggestions")
           response ((app test-db) request)]
-      (is (= 500 (:status response)))
-      (is (s/validate ErrorResponse (parse-body (:body response))))))
+      (is (= 400 (:status response)))))
 
   (testing "Test GET request to a wrong path returns expected response"
     (let [request  (mock/request :get "/wrong-path")
@@ -40,7 +39,7 @@
   (testing "Test server errors returns expected response"
     (let [empty-state ""
           query-params {:q "montreal"}
-          request (mock/request :get "/suggestions")
+          request (mock/request :get "/suggestions" query-params)
           response ((app empty-state) request)]
       (is (= 500 (:status response)))
       (is (s/validate ErrorResponse (parse-body (:body response)))))))
