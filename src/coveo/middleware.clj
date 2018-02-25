@@ -3,8 +3,7 @@
 
 
 (defn wrap-internal-error
-  "Centralize internal server error responses as a middleware
-  applied to all routes."
+  "Centralize internal server error responses as a middleware applied to all routes."
   [handler]
   (fn [request]
     (try

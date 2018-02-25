@@ -4,11 +4,10 @@
             [coveo.middleware :refer [wrap-internal-error]]
             [coveo.services :refer [app-routes]]))
 
-;; Creates a ring handler by combining our service route
-;; handlers and route not found handler
 (defn app
-  "Takes an initial state which is the data loaded from files."
+  "Application handler that takes an initial state containing data to feed the application.
+  Contains handlers for service routes and not-found route"
   [state]
   (compojure/routes
-   (compojure/wrap-routes (app-routes state) wrap-internal-error)
+   (app-routes state)
    (route/not-found "Oh noo")))

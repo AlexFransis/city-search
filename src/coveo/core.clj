@@ -12,6 +12,7 @@
 
 (defn load-data
   [config]
+  (println "### Loading data ###")
   (let [{:keys [city-file metadata-file]} config
         {:keys [city-rdr metadata-rdr]} (load-files city-file metadata-file)
         city-data (parse-city-file city-rdr)
@@ -22,22 +23,21 @@
   [& {:keys [port handler]
       :or {port 7000}}]
   (try
-    (println (str "starting nREPL server on port: " port))
+    (println (str "### Starting nREPL server on port: " port " ###"))
     (nrepl/start-server :port port :handler handler)
     (catch Exception e
-      (println "failed to start nRepl")
+      (println "### Failed to start nREPL ###")
       (throw e))))
 
 (defn start-http
-  "Takes a ring handler to start the HTTP server.
-  A handler is simply an http response to a request."
+  "Takes a ring handler to start the HTTP server."
   [handler & {:keys [port]
               :or {port 3000}}]
   (try
-    (println (str "starting HTTP server on port: " port))
+    (println (str "### Starting HTTP server on port: " port " ###"))
     (run-server handler {:port port})
     (catch Exception e
-      (println "failed to start http server")
+      (println "### Failed to start http server ###")
       (throw e))))
 
 (defn -main

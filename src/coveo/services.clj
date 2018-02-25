@@ -22,6 +22,7 @@
                         {latitude :- Double nil}]
          :return payload/SuggestionList
          :responses {status/bad-request {:description "Missing required parameter"}
-                     status/internal-server-error {:schema payload/ErrorResponse}}
-         :summary "Returns suggestions matching the requested location"
+                     status/internal-server-error {:description "Server error"
+                                                   :schema payload/ErrorResponse}}
+         :summary "Returns suggestions matching the request parameters"
          (get-suggestions {:q q :long longitude :lat latitude} state))))

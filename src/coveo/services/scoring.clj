@@ -10,10 +10,10 @@
   (* rad (/ 180 Math/PI)))
 
 (defn- round-with-precision
-  "Rounds a `Double` to the given precision."
-  [precision double]
+  "Rounds a double to the given precision."
+  [precision dbl]
   (let [factor (Math/pow 10 precision)]
-    (/ (Math/round (* double factor))
+    (/ (Math/round (* dbl factor))
        factor)))
 
 (defn adjust-score-for-population
@@ -63,7 +63,7 @@
            (* 60 1.1515)
            ;; Convert miles to kms
            (* 1.609344)
-           ;; Keep only 2 decimal places when computing distance
+           ;; Keep only 2 decimal places when returning distance
            (round-with-precision 2)))))
 
 (defn get-distance-score
@@ -71,9 +71,6 @@
   It will compute the distance and compare it to the longest distance
   between two points on earth. It will apply a negative exponential slope to
   calculate the score
-
-  Will not compute the score if `lat1` and `long1` are nil.
-  Will add a default value of 0 in case either is missing but not both.
 
   Takes:
   - `geo1` a vector containing latitude and longitude as `Double`
@@ -96,7 +93,7 @@
 
 (defn get-city-name-score
   "Returns a score based on string similarity using Levenshtein's distance algorithm.
-  Compute the number of single character edits required to change `city1` to `city2`
+  Compute the number of single character edits required to change `str1` to `str2`
   then return a score from 0 to 1 being the most confident of a match by dividing
   the number of edits required by the upper bound which is at most the length of the
   longest string of the two.
@@ -104,8 +101,6 @@
   Takes:
   - `str1` key with a `String` value
   - `str2` key with a `String` value
-
-  Defaults to an empty string if value is not provided.
 
   Returns:
   - `Double` score value from 0.0 to 1.0
