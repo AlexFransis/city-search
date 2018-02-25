@@ -1,10 +1,10 @@
-# coveo
+# coveo city search
 
-A Clojure library designed to ... well, that part is up to you.
+RESTful service to search major cities in Canada and USA
 
 ## Usage
 
-FIXME
+[Hosted service] (https://coveo-city-search.herokuapp.com/)
 
 ## License
 
