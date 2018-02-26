@@ -15,10 +15,10 @@
   * `latitude`
   * `longitude`
 
-* __ Success Response __
+* __Success Response__
   * __Code:__ 200
   * __Content:__
-                  {
+                 `{
                     result: "ok",
                     suggestions: [
                       {
@@ -29,27 +29,27 @@
                         score: double
                       }
                     ]
-                  }
+                  }`
 
-* __ Error Response __
+* __Error Response__
   * __Code:__ 500
   * __Content:__
-                  {
+                  `{
                     result: "error",
                     message: "string"
-                  }
+                  }`
   OR
 
   * __Code:__ 400
   * __Content:__
-                  {
+                  `{
                     result: "error",
                     message: "string"
-                  }
+                  }`
 
-* __ Example call __
-  * `/suggestions?q=montre&latitude=45.5088&longitude=-73.587`'
-          {
+* __Example call__
+  * `/suggestions?q=montre&latitude=45.5088&longitude=-73.587`
+          `{
           "result": "ok",
           "suggestions": [
             {
@@ -67,4 +67,4 @@
               "score": 0.7137
             }
           ]
-        }
+         }`
