@@ -81,3 +81,8 @@
    ]
   }
   ```
+
+* __Things to consider__
+  * If only `latitude` or `longitude` is provided the service will not consider them in the search results.
+  * The search will not auto correct typos in city names.
+  * The search does not do a full text search on the city names, so a search for `york` will not return `new york` as a suggestion.
