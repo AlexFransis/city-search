@@ -30,9 +30,9 @@
       "population": 0,
       "score": 0
     }
-  ]
-}
-```
+   ]
+  }
+  ```
 
 * __Error Response__
   * __Code:__ 500
@@ -78,6 +78,6 @@
       "population": 5184,
       "score": 0.7137
     }
-  ]
-}
-```
+   ]
+  }
+  ```
