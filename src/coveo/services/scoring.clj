@@ -22,18 +22,14 @@
           population-weight 0.6
           total-population  (reduce (fn [total city]
                                       (+ total (:population city))) 0 suggestions)]
-      (reduce (fn [coll suggestion]
-                (let [population (:population suggestion)]
-                  (conj coll
-                        (update suggestion :score
-                                (fn [score]
-                                  (help/round-with-precision
-                                   4
-                                   (+ (* score-weight score)
-                                      (* population-weight (/ population
-                                                              total-population)))))))))
-              []
-              suggestions))
+      (map (fn [suggestion]
+             (let [population (:population suggestion)]
+               (update suggestion :score
+                       (fn [score]
+                         (help/round-with-precision 4 (+ (* score-weight score)
+                                                         (* population-weight (/ population
+                                                                                 total-population))))))))
+           suggestions))
     suggestions))
 
 (defn get-distance-score

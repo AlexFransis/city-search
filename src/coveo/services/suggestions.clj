@@ -3,6 +3,10 @@
             [coveo.services.scoring :refer [get-score adjust-score-for-population]]
             [ring.util.http-response :as response]))
 
+(defn- get-first-letter
+  [q]
+  (keyword (str (first (str/lower-case q)))))
+
 (defn create-payload-object
   "Creates a payload object to be returned.
 
@@ -12,12 +16,12 @@
   Returns a function to be applied to a collection of city records via reduce.
   "
   [{:keys [q lat long] :as query-params}]
-  (fn [coll {:keys [name latitude longitude score population admin1 country] :as record}]
-    (conj coll {:name (str name ", " admin1 ", " country)
-                :latitude latitude
-                :longitude longitude
-                :population population
-                :score (get-score query-params record)})))
+  (fn [{:keys [name latitude longitude score population admin1 country] :as record}]
+    {:name (str name ", " admin1 ", " country)
+     :latitude latitude
+     :longitude longitude
+     :population population
+     :score (get-score query-params record)}))
 
 (defn get-suggestions
   "Returns a vector of city suggestions with a score in the body of an HTTP response.
@@ -30,9 +34,9 @@
   (if-not (seq cities)
     (response/internal-server-error {:result "error"
                                      :message "Failed to load data"})
-    (->> (get cities (keyword (str (first (str/lower-case q)))))
+    (->> (get cities (get-first-letter q))
          (filter (fn [record] (str/starts-with? (:ascii record) (str/lower-case q))))
-         (reduce (create-payload-object query-params) [])
+         (map (create-payload-object query-params))
          (adjust-score-for-population query-params)
          (sort-by :score >)
          (assoc {:result "ok"} :suggestions)

@@ -18,10 +18,10 @@
     (GET "/suggestions" []
          :tags ["suggestions"]
          :query-params [q :- (describe String "city name")
-                        {longitude :- Double nil}
-                        {latitude :- Double nil}]
+                        {latitude :- Double nil}
+                        {longitude :- Double nil}]
          :return payload/SuggestionList
-         :responses {status/bad-request {:description "Missing required parameter"}
+         :responses {status/bad-request {:description "Missing or invalid parameter"}
                      status/internal-server-error {:description "Server error"
                                                    :schema payload/ErrorResponse}}
          :summary "Returns suggestions matching the request parameters"

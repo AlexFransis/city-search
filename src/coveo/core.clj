@@ -17,7 +17,8 @@
         {:keys [city-rdr metadata-rdr]} (load-files city-file metadata-file)
         city-data (parse-city-file city-rdr)
         city-metadata (parse-metadata-file metadata-rdr)]
-    (partition-data (merge-data city-data city-metadata))))
+    (->> (merge-data city-data city-metadata)
+         partition-data)))
 
 (defn start-repl
   [& {:keys [port handler]
