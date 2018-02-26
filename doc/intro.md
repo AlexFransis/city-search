@@ -21,13 +21,17 @@
 
   ```json
   {
-  result: "ok",
-  suggestions: [{
-  name: string,
-  latitude: double,
-  longitude: double,
-  population: integer,
-  score: double}]}
+  "result": "string",
+  "suggestions": [
+    {
+      "name": "string",
+      "latitude": 0,
+      "longitude": 0,
+      "population": 0,
+      "score": 0
+    }
+  ]
+}
   ```
 * __Error Response__
   * __Code:__ 500
@@ -35,20 +39,19 @@
 
   ```json
   {
-  result: "error",
-  message: "string"
+  "result": "error",
+  "message": "string"
   }
   ```
-
-OR
+  OR
 
   * __Code:__ 400
   * __Content:__
 
   ```json
   {
-  result: "error",
-  message: "string"
+  "result": "error",
+  "message": "string"
   }
   ```
 
@@ -59,20 +62,20 @@ OR
   {
   "result": "ok",
   "suggestions": [
-  {
-  "name": "montréal, quebec, ca",
-  "latitude": 45.50883865356445,
-  "longitude": -73.58780670166016,
-  "population": 3268513,
-  "score": 0.875
-  },
-  {
-  "name": "montréal-ouest, quebec, ca",
-  "latitude": 45.45286178588867,
-  "longitude": -73.64917755126953,
-  "population": 5184,
-  "score": 0.7137
-  }
+    {
+      "name": "montréal, quebec, ca",
+      "latitude": 45.50883865356445,
+      "longitude": -73.58780670166016,
+      "population": 3268513,
+      "score": 0.875
+    },
+    {
+      "name": "montréal-ouest, quebec, ca",
+      "latitude": 45.45286178588867,
+      "longitude": -73.64917755126953,
+      "population": 5184,
+      "score": 0.7137
+    }
   ]
-  }
+}
   ```
