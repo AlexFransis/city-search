@@ -26,9 +26,11 @@
              (let [population (:population suggestion)]
                (update suggestion :score
                        (fn [score]
-                         (help/round-with-precision 4 (+ (* score-weight score)
-                                                         (* population-weight (/ population
-                                                                                 total-population))))))))
+                         (help/round-with-precision
+                          4
+                          (+ (* score-weight score)
+                             (* population-weight (/ population
+                                                     total-population))))))))
            suggestions))
     suggestions))
 
@@ -74,10 +76,10 @@
   "
   [& {:keys [str1 str2]
       :or {str1 "" str2 ""}}]
-  (if-not (and (instance? String str1) (instance? String str2))
+  (if-not (and (string? str1) (string? str2))
     nil
     (let [longest-string (max (count str1) (count str2))]
-      (if (= 0 longest-string)
+      (if (zero? longest-string)
         1.0 ;; perfect score if both strings are empty
         (- 1.0 (/ (metrics/levenshtein str1 str2)
                   longest-string))))))
@@ -94,8 +96,7 @@
   (help/round-with-precision 4 (get-city-name-score :str1 q :str2 ascii)))
 
 (defn name-and-geo-algo
-  "Algorithm to compute score when geo coordinates are provided. Provides a default
-  value of 0 if either `lat` or `long` was not provided."
+  "Algorithm to compute score when geo coordinates are provided."
   [{:keys [q lat long] :as query-params}
    {:keys [ascii latitude longitude] :as match}]
   (let [weight         0.5

@@ -1,11 +1,11 @@
 (ns coveo.services.suggestions
   (:require [clojure.string :as str]
-            [coveo.services.scoring :refer [get-score adjust-score-for-population]]
+            [coveo.services.scoring :refer [adjust-score-for-population get-score]]
             [ring.util.http-response :as response]))
 
 (defn- get-first-letter
   [q]
-  (keyword (str (first (str/lower-case q)))))
+  (keyword (str (first q))))
 
 (defn create-payload-object
   "Creates a payload object to be returned.
@@ -13,7 +13,7 @@
   Takes:
   - `query-params` map containing keys `q`, `lat`, `long`
 
-  Returns a function to be applied to a collection of city records via reduce.
+  Returns a function to be applied to a collection of city records.
   "
   [{:keys [q lat long] :as query-params}]
   (fn [{:keys [name latitude longitude score population admin1 country] :as record}]
@@ -35,7 +35,7 @@
     (response/internal-server-error {:result "error"
                                      :message "Failed to load data"})
     (->> (get cities (get-first-letter q))
-         (filter (fn [record] (str/starts-with? (:ascii record) (str/lower-case q))))
+         (filter (fn [record] (str/starts-with? (:ascii record) q)))
          (map (create-payload-object query-params))
          (adjust-score-for-population query-params)
          (sort-by :score >)

@@ -2,7 +2,8 @@
   (:require [compojure.api.sweet :refer :all]
             [coveo.services.payload :as payload]
             [coveo.services.suggestions :refer [get-suggestions]]
-            [ring.util.http-status :as status]))
+            [ring.util.http-status :as status]
+            [clojure.string :as str]))
 
 (defn app-routes
   "Takes a state containing the application data."
@@ -25,4 +26,4 @@
                      status/internal-server-error {:description "Server error"
                                                    :schema payload/ErrorResponse}}
          :summary "Returns suggestions matching the request parameters"
-         (get-suggestions {:q q :long longitude :lat latitude} state))))
+         (get-suggestions {:q (str/lower-case q) :long longitude :lat latitude} state))))
