@@ -1,4 +1,4 @@
-# Coveo Backend Project
+# City Search Project
 
 RESTful service to search major cities in Canada and USA
 
